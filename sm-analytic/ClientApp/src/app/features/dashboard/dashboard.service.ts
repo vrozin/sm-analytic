@@ -34,8 +34,6 @@ export class DashboardService extends BaseService
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', `Bearer ${authToken}`);
 
-    console.log("AuthToken = " + authToken);
-
     return this.http.get(this.currUrl + 'dashboard/getuserdetails', { headers })
       .map(response => response.json())
       .catch(this.handleError);

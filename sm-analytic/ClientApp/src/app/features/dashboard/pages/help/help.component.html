@@ -19,10 +19,11 @@
               Leave your message here and our help desk will contact you as soon as possible!
             </div>
             <div class="form-group">
-              <input type="text" name="Message" aria-label="With textarea" class="form-control" required tmFocus ngModel #Message="ngModel" [ngClass]="{ 'is-invalid': f.submitted && Message.invalid }">
+              <input type="text" name="Message" aria-label="With textarea" class="form-control" required tmFocus ngModel #Message="ngModel" [ngClass]="{ 'is-invalid': f.submitted && Message.invalid }" maxlength="150">
               <div *ngIf="f.submitted && Message.invalid" class="invalid-feedback">
                 <div *ngIf="Message.errors.required">Message is required to be submitted with the request</div>
               </div>
+              <div *ngIf="errorsBool" class="invalid-feedback">The message cannot be empty of have only spaces</div>
             </div>
             <div class="inline">
               <button type="submit" class="btn btn-primary" [disabled]="isBusy">Submit</button>

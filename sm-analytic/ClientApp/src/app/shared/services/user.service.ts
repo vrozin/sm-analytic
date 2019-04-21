@@ -63,6 +63,8 @@ export class UserService extends BaseService {
      )
        .map(res => res.json())
        .map(res => {
+         console.log(res);
+
          localStorage.setItem('auth_token', res.auth_token);
          this.loggedIn = true;
          this._authNavStatusSource.next(true);
@@ -82,7 +84,10 @@ export class UserService extends BaseService {
   }
 
   sendEmail(Destination: string, Message: string) {
+    let auth_token = localStorage.getItem('auth_token');
+
     let headers = new Headers({ 'Content-Type': 'application/json' });
+    headers.append('Authorization', `Bearer ${auth_token}`);
 
     console.log("Object to be sent: " + JSON.stringify({ Destination, Message }));
     return this.http.post(
@@ -91,7 +96,6 @@ export class UserService extends BaseService {
       { headers }
     )
       .map(res => res.json())
-      .map(res => { console.log(".NET returned: " + res); })
       .catch(this.handleError);
   }
 }

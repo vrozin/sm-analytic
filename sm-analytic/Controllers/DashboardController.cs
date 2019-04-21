@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FluentEmail.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -23,11 +24,17 @@ namespace sm_analytic.Controllers
         private readonly ClaimsPrincipal _userCaller;
         private readonly UserManager<IdentityCustomModel> _userManager;
 
+        private readonly string _adminEmail;
+        private readonly string _emailPassword;
+
         public DashboardController(DataDbContext dataDbContext, IHttpContextAccessor httpContextAccessor, UserManager<IdentityCustomModel> userManager)
         {
             _userCaller    = httpContextAccessor.HttpContext.User;
             _dataDbContext = dataDbContext;
             _userManager   = userManager;
+
+            _adminEmail    = "smanalyticjmv@gmail.com";//Environment.GetEnvironmentVariable("AdminEmail");
+            _emailPassword = "Qwerty112358";//Environment.GetEnvironmentVariable("EmailPassword");
         }
 
         /// <summary>
@@ -65,27 +72,57 @@ namespace sm_analytic.Controllers
         /// <param name="EmailMessage">Email body message and its destination</param>
         /// <returns>Success message if sent</returns>
         [Route("~/api/Dashboard/SendEmail")]
-        //[Authorize(Policy = "SMAnalytic")]
+        [Authorize(Policy = "SMAnalytic")]
         [HttpPost]
-        public async Task<IActionResult> SendEmail([FromServices]IFluentEmail email, [FromBody]EmailMessage emailMessage)
+        public async Task<IActionResult> SendEmail([FromBody]EmailMessage emailMessage)
         {
-            var result = await email
-                               .To(emailMessage.Destination)
-                               .Subject("HELP ME")
-                               .Body(emailMessage.Message)
-                               .SendAsync();
+            // Getting the caller's details
+            var userActionResult = await GetCallerDetails();
+            var userObjectResult = userActionResult as OkObjectResult;
+            var user = userObjectResult.Value as AccountBaseInfo;
 
-            //SmtpClient myclient = new SmtpClient
-            //{
-            //    UseDefaultCredentials = true,
-            //    Credentials = new System.Net.NetworkCredential("username", "user password"),
-            //    DeliveryMethod = SmtpDeliveryMethod.Network
-            //};
+            // Sending the email
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
 
-            if (result.Successful)
-                return new OkObjectResult(new {result = "The email has been sent"});
-            else
-                return new BadRequestObjectResult(new { result = "Couldn't sent the email" });
+            smtp.EnableSsl = true;
+            smtp.Port = 587;
+            smtp.Credentials = new NetworkCredential(_adminEmail, _emailPassword);
+
+            MailMessage message = new MailMessage();
+
+            message.Sender = new MailAddress(_adminEmail, user.Email /*user's email*/);
+            message.From = new MailAddress(_adminEmail, "SM Analytic Help");
+
+            // List of recipients
+            message.To.Add(new MailAddress(_adminEmail, "Admin"));
+
+            message.Subject = "Help Request";
+            message.Body = "<b>FROM:</b> " + user.FirstName + " " + user.LastName + " (" + user.Email + ")" +
+               "<p> <b>MESSAGE:</b> " +
+               emailMessage.Message +
+               "</p> ";
+
+            message.IsBodyHtml = true;
+
+            await smtp.SendMailAsync(message);
+
+            return new OkObjectResult(new { result = "The email has been sent" });
+
         }
+
+        /// <summary>
+        /// Admin sends an email to all app users
+        /// </summary>
+        /// <param name="emailMessage">Email to be sent to all users</param>
+        /// <returns>Success message if sent</returns>
+        //[Route("~/api/Dashboard/SendEmailBroadcast")]
+        //[Authorize(Policy = "SMAnalytic")]
+        //[HttpPost]
+        //public async Task<IActionResult> SendEmailBroadcast([FromBody]EmailMessage emailMessage)
+        //{
+
+
+
+        //}
     }
 }

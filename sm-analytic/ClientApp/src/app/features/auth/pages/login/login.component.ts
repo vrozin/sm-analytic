@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit, OnDestroy
   private subscription: Subscription;
 
   newUser: boolean;
-  errors: string;
+  errors: string = '';
   submitted: boolean = false;
   credentials: LoginCredentials = { Email: '', Password: '' };
   isBusy: boolean;
@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy
         .subscribe(
         result =>
         {
+          console.log(result);
           if (result)
           {
               this.router.navigate(['dashboard']);

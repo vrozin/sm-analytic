@@ -2,7 +2,7 @@
   <h1>Social Media Analytics</h1>
 
   <div *ngIf="newUser" class="alert alert-success" role="alert">
-    <strong>The account has been created!</strong>
+    <strong>The account has been created! Please confirm your email.</strong>
   </div>
 
   <h5>Please login to your account.</h5>
@@ -31,7 +31,8 @@
     </div>
 
     <div *ngIf="errors" class="alert alert-danger" role="alert">
-      <strong>Seems like we have some errors with logging in</strong> <!--{{errors}}-->
+      <strong>Seems like we have some errors with logging in.</strong>
+      <div>{{errors}}</div>
     </div>
 
     <div class="inline">

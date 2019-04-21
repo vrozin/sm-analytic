@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
@@ -9,7 +8,6 @@ using System.Web.Http.ModelBinding;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using sm_analytic.Controllers;
-using Newtonsoft.Json;
 
 namespace sm_analytic.Models
 {
@@ -200,9 +198,5 @@ namespace sm_analytic.Models
                 
             }
         }
-
-
-
-
     }
 }

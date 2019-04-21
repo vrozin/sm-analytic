@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../../shared/services/user.service';
 import { EmailMessage } from 'app/shared/models/email-message';
+import { Router } from '@angular/router';
+import { DashboardService } from '../../dashboard.service';
 
 
 @Component({
@@ -11,27 +13,32 @@ import { EmailMessage } from 'app/shared/models/email-message';
 export class HelpComponent implements OnInit {
 
   errors: string = '';
+  errorsBool: boolean = false;
   submitted: boolean = false;
   isBusy: boolean = false;
   messageBack: boolean = false;
 
-  constructor(private userService: UserService) { }
+  constructor(
+    private userService: UserService) { }
 
   ngOnInit() {}
 
-  // SHOULD ACCEPT USER'S REGISTERED EMAIL
   sendHelpEmail({ value, valid }: { value: EmailMessage, valid: boolean }) {
     this.submitted = true;
     this.errors = '';
+    this.errorsBool = false;
     this.isBusy = true;
     this.messageBack = false;
-    console.log("IN sendHelpEmail()");
-    console.log("EmailMessage: " + value.Message);
+
+    if (value.Message.trim().length == 0) {
+      this.errors = "The message cannot be empty of have only spaces";
+      this.errorsBool = true;
+    }
+    else
     if (valid) {
-      this.userService.sendEmail('vladimir.rozin.1618@gmail.com', value.Message)
-        .finally(() => this.isBusy = false)
+      this.userService.sendEmail('smanalyticjmv@gmail.com', value.Message.trim())
         .subscribe(result => {
-          if (result) {
+          if (result.result != 0) {
             this.messageBack = true;
           }
 
@@ -39,7 +46,7 @@ export class HelpComponent implements OnInit {
         error => console.log(error));
 
     }
-
+    this.isBusy = false;
 
   }
 

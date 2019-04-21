@@ -38,13 +38,13 @@ namespace sm_analytic
         {
             //Dependency Injection to 
             services.AddDbContext<DataDbContext>(options => options.UseSqlServer(
-                                                            Configuration.GetConnectionString("AzureConnection"/*"DefaultConnection"*/)));
+                                                            Configuration.GetConnectionString(/*"AzureConnection"*/"DefaultConnection")));
             services.BuildServiceProvider().GetService<DataDbContext>().Database.Migrate();
             
             services.AddSingleton<IJwtManager, JwtManager>();
             services.AddHttpContextAccessor();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddFluentEmail("vladimir.rozin.1618@gmail.com").AddSmtpSender("localhost", 25);
+            //services.AddFluentEmail("vladimir.rozin.1618@gmail.com").AddSmtpSender("localhost", 25);
 
             //Getting config data from appsettings.json
             var jwtAppSettingProps = Configuration.GetSection(nameof(JwtIssuerProps));

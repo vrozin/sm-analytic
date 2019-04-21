@@ -10,13 +10,14 @@ namespace sm_analytic.Models
     {
         public IdentityCustomModel()
         {
-            LastLoginDate        = DateTime.Today;
-            DOB                  = DateTime.Now.AddYears(-30);
-            //TwoFactorEnabled     = false;
-            EmailConfirmed       = true;
-            PhoneNumberConfirmed = true;
-            LockoutEnabled       = false;
-            //LockoutEnd           = DateTimeOffset.Now.AddYears(10); // To be lifted after account confirmation
+            LastLoginDate         = DateTime.Now;
+            DOB                   = DateTime.Now.AddYears(-30);
+            EmailConfirmed        = false;
+            EmailConfirmedByAdmin = false;
+            PhoneNumberConfirmed  = true;
+            LockoutEnabled        = false;
+            IsApplicationAdmin    = false;
+            //LockoutEnd            = DateTimeOffset.Now.AddYears(10); // To be lifted after account confirmation
         }
 
         public string FirstName { get; set; }
@@ -28,6 +29,10 @@ namespace sm_analytic.Models
         public string SecondaryPassword { get; set; }
 
         public DateTime DOB { get; set; }
+
+        public bool EmailConfirmedByAdmin { get; set; }
+
+        public bool IsApplicationAdmin { get; set; }
 
         //public int Id { get; set; }
 
