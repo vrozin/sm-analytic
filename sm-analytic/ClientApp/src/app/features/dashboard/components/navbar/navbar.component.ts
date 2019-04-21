@@ -34,6 +34,7 @@ export class NavbarComponent implements OnInit {
 
     },
         error => { });
+<<<<<<< HEAD
 
 
   }
@@ -58,3 +59,27 @@ export class NavbarComponent implements OnInit {
   }
 
 }
+=======
+
+
+  }
+
+  ngOnDestroy()
+  {
+    this.dashboardUserSubscr.unsubscribe();
+  }
+
+  faq() {
+    this.router.navigate(['faq']);
+  }
+
+  options: Object[] = [
+    { 'title': 'FAQ', 'path': 'dashboard/faq' }
+  ];
+
+  gotoMenuPage(path) {
+    this.router.navigate([path]);
+  }
+
+}
+>>>>>>> display-version

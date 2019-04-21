@@ -6,11 +6,14 @@ import { AuthComponent } from './auth.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
 import { PasswordResetComponent } from './pages/password-reset/password-reset.component';
-import { UserInfoComponent } from '../dashboard/components/user-info/user-info.component';
+import { FaqComponent } from './pages/faq/faq.component';
+
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 import { UserService } from '../../shared/services/user.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+
 import { SharedModule } from '../../shared/shared.module';
 import { EmailValidator } from '../../shared/services/utils/email-validation.directive';
 import { ConfirmationComponent } from './pages/register/confirmation/confirmation.component';
@@ -28,6 +31,8 @@ import { ConfirmationComponent } from './pages/register/confirmation/confirmatio
     AuthComponent, 
     RegisterComponent, 
     LoginComponent, 
+    FaqComponent,
+    NavbarComponent,
     PasswordResetComponent,
     EmailValidator,
     ConfirmationComponent
@@ -36,7 +41,8 @@ import { ConfirmationComponent } from './pages/register/confirmation/confirmatio
     UserService
   ],
   exports: [
-    AuthComponent
+    AuthComponent,
+    NavbarComponent
   ]
 })
 export class AuthModule { }
