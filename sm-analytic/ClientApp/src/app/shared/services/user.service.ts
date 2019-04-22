@@ -98,4 +98,34 @@ export class UserService extends BaseService {
       .map(res => res.json())
       .catch(this.handleError);
   }
+
+  sendBroadcastEmail(Subject: string, Message: string) {
+    let auth_token = localStorage.getItem('auth_token');
+
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    headers.append('Authorization', `Bearer ${auth_token}`);
+
+    console.log("Object to be sent: " + JSON.stringify({ Subject, Message }));
+    return this.http.post(
+      this.baseUrl + 'dashboard/sendemailbroadcast',
+      JSON.stringify({ Subject, Message }),
+      { headers }
+    )
+      .map(res => res.json())
+      .catch(this.handleError);
+  }
+
+  confirmAccount(userId: string, userToken: string) {
+    console.log("In confirmation! uID: " + userId +" uToken: "+userToken);
+
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+
+    return this.http.get(
+      this.baseUrl + 'account/confirm?userId=' + userId + "&confirmationToken=" + encodeURIComponent(userToken),
+      { headers }
+    )
+      .map(result => result.json())
+      .catch(this.handleError);
+
+  }
 }

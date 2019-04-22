@@ -17,6 +17,9 @@ export class NavbarComponent implements OnInit {
   dashboardUser: DashboardUser;
   dashboardUserFN: string = "";
   dashboardUserLN: string = "";
+  dashboardUserIsAdmin: boolean = false;
+
+  options: Object[];
 
   private dashboardUserSubscr: Subscription = null;
   
@@ -26,17 +29,26 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit()
   {
+    this.options = [
+      //{ 'title': 'Profile', 'path': 'dashboard/profile' },
+      { 'title': 'FAQ', 'path': 'dashboard/faq' },
+      { 'title': 'Help', 'path': 'dashboard/help' },
+    ];
+
     this.dashboardUserSubscr = this.dashboardService.getAuthDetails().subscribe((dashboardUser: DashboardUser) =>
     {
-      this.dashboardUser   = dashboardUser;
-      this.dashboardUserFN = dashboardUser.firstName;
-      this.dashboardUserLN = dashboardUser.lastName;
+      this.dashboardUser        = dashboardUser;
+      this.dashboardUserFN      = dashboardUser.firstName;
+      this.dashboardUserLN      = dashboardUser.lastName;
+      this.dashboardUserIsAdmin = dashboardUser.isAdmin;
 
+      if (this.dashboardUserIsAdmin)
+      {
+        this.options.push(new Object({ 'title': 'Admin Panel', 'path': 'dashboard/pending-users' }));
+        this.options.push(new Object({ 'title': 'Broadcast', 'path': 'dashboard/broadcast-message' }));
+      }
     },
-        error => { });
-<<<<<<< HEAD
-
-
+      error => { });
   }
 
   ngOnDestroy()
@@ -48,38 +60,7 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(['faq']);
   }
 
-  options: Object[] = [
-    //{ 'title': 'Profile', 'path': 'dashboard/profile' },
-    { 'title': 'FAQ', 'path': 'dashboard/faq' },
-    { 'title': 'Help', 'path': 'dashboard/help' }
-  ];
-
   gotoMenuPage(path) {
     this.router.navigate([path]);
   }
-
 }
-=======
-
-
-  }
-
-  ngOnDestroy()
-  {
-    this.dashboardUserSubscr.unsubscribe();
-  }
-
-  faq() {
-    this.router.navigate(['faq']);
-  }
-
-  options: Object[] = [
-    { 'title': 'FAQ', 'path': 'dashboard/faq' }
-  ];
-
-  gotoMenuPage(path) {
-    this.router.navigate([path]);
-  }
-
-}
->>>>>>> display-version

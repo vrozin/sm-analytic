@@ -35,8 +35,8 @@ export class HelpComponent implements OnInit {
       this.errorsBool = true;
     }
     else
-    if (valid) {
-      this.userService.sendEmail('smanalyticjmv@gmail.com', value.Message.trim())
+      if (valid) {
+        this.userService.sendEmail(/*process.env.AdminEmail*/'smanalyticjmv@gmail.com', value.Message.trim())
         .subscribe(result => {
           if (result.result != 0) {
             this.messageBack = true;

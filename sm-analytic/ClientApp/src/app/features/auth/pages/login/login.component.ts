@@ -17,6 +17,10 @@ export class LoginComponent implements OnInit, OnDestroy
   private subscription: Subscription;
 
   newUser: boolean;
+  userConfirmed: boolean = false;
+  userId: string = '';
+  userToken: string = '';
+  confirmationMessage: string = '';
   errors: string = '';
   submitted: boolean = false;
   credentials: LoginCredentials = { Email: '', Password: '' };
@@ -32,7 +36,15 @@ export class LoginComponent implements OnInit, OnDestroy
       {
         this.newUser = param['newUser'];
         this.credentials.Email = param['Email'];
+        this.userConfirmed = param['userConfirmed'];
+        this.userId = param['userId'];
+        this.userToken = param['confirmationToken'];
       });
+
+    if (this.userConfirmed)
+    {
+      this.confirmAccount(this.userId, this.userToken);
+    }
   }
 
   ngOnDestroy()
@@ -66,6 +78,15 @@ export class LoginComponent implements OnInit, OnDestroy
   resetPassword()
   {
     this.router.navigate(['auth/passwordReset']);
+  }
+
+  confirmAccount(userId: string, userToken: string) {
+    this.userService.confirmAccount(userId, userToken)
+      .subscribe(
+        result => {
+          console.log("result of confirmEmail: " + result);
+          this.confirmationMessage = result.message;
+      });
   }
 
 }

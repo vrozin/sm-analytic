@@ -4,6 +4,9 @@
   <div *ngIf="newUser" class="alert alert-success" role="alert">
     <strong>The account has been created! Please confirm your email.</strong>
   </div>
+  <div *ngIf="userConfirmed" class="alert alert-success" role="alert">
+    <strong>{{confirmationMessage}}</strong>
+  </div>
 
   <h5>Please login to your account.</h5>
 
@@ -22,7 +25,7 @@
     <div class="input">
       <div class="form-group">
         <h6>Password:</h6>
-        <input type="password" id="password" name="Password" minlength="6" required class="form-control" ngModel #Password="ngModel" [ngClass]="{ 'is-invalid': f.submitted && Password.invalid }"  title="Password must contain upper- and lower-case letters, and at least one digit. It cannot be shorter than 6 characters">
+        <input type="password" id="password" name="Password" minlength="6" required class="form-control" ngModel #Password="ngModel" [ngClass]="{ 'is-invalid': f.submitted && Password.invalid }" title="Password must contain upper- and lower-case letters, and at least one digit. It cannot be shorter than 6 characters">
         <div *ngIf="f.submitted && Password.invalid" class="invalid-feedback">
           <div *ngIf="Password.errors.required">Password is required</div>
           <div *ngIf="Password.errors.minlength">Password must be at least 6 characters long</div>

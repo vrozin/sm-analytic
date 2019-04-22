@@ -30,6 +30,8 @@ import { FormsModule } from '@angular/forms';
 import { DashboardService } from './dashboard.service';
 import { UserService } from '../../shared/services/user.service';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { PendingUsersComponent } from './pages/pending-users/pending-users.component';
+import { BroadcastMessageComponent } from './pages/broadcast-message/broadcast-message.component';
 
 @NgModule({
   imports: [
@@ -53,7 +55,9 @@ import { AuthModalComponent } from './components/auth-modal/auth-modal.component
     HelpComponent,
     ProfileComponent,
     TweetListComponent,
-    AuthModalComponent
+    AuthModalComponent,
+    PendingUsersComponent,
+    BroadcastMessageComponent,
   ],
   providers: [
     ApiService, 

@@ -44,4 +44,13 @@ namespace sm_analytic.Models
 
         public string Message { get; set; }
     }
+
+    public class EmailSubjectMessage
+    {
+        public string Destination { get; set; }
+
+        public string Message { get; set; }
+
+        public string Subject { get; set; }
+    }
 }

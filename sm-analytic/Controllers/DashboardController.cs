@@ -59,7 +59,8 @@ namespace sm_analytic.Controllers
                 FirstName = user.IdentityCustomModel.FirstName,
                 LastName  = user.IdentityCustomModel.LastName,
                 Email     = user.IdentityCustomModel.Email,
-                DOB       = user.IdentityCustomModel.DOB
+                DOB       = user.IdentityCustomModel.DOB,
+                IsAdmin   = user.IdentityCustomModel.IsApplicationAdmin
             };
 
             return new OkObjectResult(toReturn);
@@ -90,11 +91,11 @@ namespace sm_analytic.Controllers
 
             MailMessage message = new MailMessage();
 
-            message.Sender = new MailAddress(_adminEmail, user.Email /*user's email*/);
+            message.Sender = new MailAddress(_adminEmail, user.Email);
             message.From = new MailAddress(_adminEmail, "SM Analytic Help");
 
             // List of recipients
-            message.To.Add(new MailAddress(_adminEmail, "Admin"));
+            message.To.Add(new MailAddress(emailMessage.Destination, "Admin"));
 
             message.Subject = "Help Request";
             message.Body = "<b>FROM:</b> " + user.FirstName + " " + user.LastName + " (" + user.Email + ")" +
@@ -107,7 +108,6 @@ namespace sm_analytic.Controllers
             await smtp.SendMailAsync(message);
 
             return new OkObjectResult(new { result = "The email has been sent" });
-
         }
 
         /// <summary>
@@ -115,14 +115,51 @@ namespace sm_analytic.Controllers
         /// </summary>
         /// <param name="emailMessage">Email to be sent to all users</param>
         /// <returns>Success message if sent</returns>
-        //[Route("~/api/Dashboard/SendEmailBroadcast")]
-        //[Authorize(Policy = "SMAnalytic")]
-        //[HttpPost]
-        //public async Task<IActionResult> SendEmailBroadcast([FromBody]EmailMessage emailMessage)
-        //{
+        [Route("~/api/Dashboard/SendEmailBroadcast")]
+        [Authorize(Policy = "SMAnalytic")]
+        [HttpPost]
+        public async Task<IActionResult> SendEmailBroadcast([FromBody]EmailSubjectMessage emailMessage)
+        {
+            // Getting the caller's details
+            var userActionResult = await GetCallerDetails();
+            var userObjectResult = userActionResult as OkObjectResult;
+            var user = userObjectResult.Value as AccountBaseInfo;
+
+            if (!user.IsAdmin)
+            {
+                return new BadRequestObjectResult(new { message = "Not authorized to send this type of email!" });
+            }
+
+            // Sending the email
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
+
+            smtp.EnableSsl = true;
+            smtp.Port = 587;
+            smtp.Credentials = new NetworkCredential(_adminEmail, _emailPassword);
+
+            MailMessage message = new MailMessage();
+            message.Sender = new MailAddress(_adminEmail, "Admin");
+            message.From = new MailAddress(_adminEmail, "SM Analytic Notifications");
+            message.Subject = emailMessage.Subject;
+            message.Body = "<b>FROM:</b> " + user.FirstName + " " + user.LastName + " (" + user.Email + ")" +
+               "<p> <b>MESSAGE:</b> " +
+               emailMessage.Message +
+               "</p> ";
+            message.IsBodyHtml = true;
+
+            await _dataDbContext
+                .Users
+                .Where(i => i.IsApplicationAdmin == false && i.EmailConfirmedByAdmin == true)
+                .ForEachAsync(i =>
+                {
+                    message.To.Add(new MailAddress(i.Email, i.FirstName + " " + i.LastName));
+                });
+
+            await smtp.SendMailAsync(message);
+
+            return new OkObjectResult(new { result = "The email has been sent" });
 
 
-
-        //}
+        }
     }
 }

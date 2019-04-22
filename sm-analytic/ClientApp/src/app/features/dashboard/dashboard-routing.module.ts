@@ -8,8 +8,9 @@ import { DashboardComponent } from './dashboard.component';
 import { FaqComponent } from './pages/faq/faq.component';
 import { HelpComponent } from './pages/help/help.component';
 import { ProfileComponent } from './pages/profile/profile.component';
-
+import { PendingUsersComponent } from './pages/pending-users/pending-users.component';
 import { AuthGuard } from '../auth/auth.guard';
+import { BroadcastMessageComponent } from './pages/broadcast-message/broadcast-message.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,14 @@ const routes: Routes = [
       {
         path: 'profile',
         component: ProfileComponent
+      },
+      {
+        path: 'pending-users',
+        component: PendingUsersComponent
+      },
+      {
+        path: 'broadcast-message',
+        component: BroadcastMessageComponent
       }
     ]
   }

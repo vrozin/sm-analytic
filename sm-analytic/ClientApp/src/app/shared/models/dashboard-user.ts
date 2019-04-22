@@ -4,4 +4,5 @@ export interface DashboardUser
   lastName: string;
   email: string;
   dob: string;
+  isAdmin: boolean;
 }

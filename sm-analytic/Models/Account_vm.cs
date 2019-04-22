@@ -114,5 +114,9 @@ namespace sm_analytic.Models
         [DisplayName("Date of Birth")]
         [Required]
         public DateTime DOB { get; set; }
+
+        [DisplayName("Is Admin")]
+        [Required]
+        public bool IsAdmin { get; set; }
     }
 }

@@ -16,7 +16,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { SharedModule } from '../../shared/shared.module';
 import { EmailValidator } from '../../shared/services/utils/email-validation.directive';
-import { ConfirmationComponent } from './pages/register/confirmation/confirmation.component';
 
 @NgModule({
   imports: [
@@ -35,7 +34,6 @@ import { ConfirmationComponent } from './pages/register/confirmation/confirmatio
     NavbarComponent,
     PasswordResetComponent,
     EmailValidator,
-    ConfirmationComponent
   ],
   providers: [
     UserService

@@ -2,7 +2,7 @@
   <div class="container-fluid">
 
     <div class="row">
-      <div class="col-md">
+      <div class="col-md text-center">
         <h2>Send a Help Email to Our Team</h2>
         <hr>
       </div>
@@ -19,7 +19,7 @@
               Leave your message here and our help desk will contact you as soon as possible!
             </div>
             <div class="form-group">
-              <input type="text" name="Message" aria-label="With textarea" class="form-control" required tmFocus ngModel #Message="ngModel" [ngClass]="{ 'is-invalid': f.submitted && Message.invalid }" maxlength="150">
+              <input type="text" name="Message" aria-label="With textarea" class="form-control text-center" required tmFocus ngModel #Message="ngModel" [ngClass]="{ 'is-invalid': f.submitted && Message.invalid }" maxlength="150">
               <div *ngIf="f.submitted && Message.invalid" class="invalid-feedback">
                 <div *ngIf="Message.errors.required">Message is required to be submitted with the request</div>
               </div>
@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <div *ngIf="messageBack" class="alert alert-success" role="alert">
+      <div *ngIf="messageBack" class="alert alert-success text-center" role="alert">
         <strong>The email has been sent! Our team will contact you as soon as possible!</strong>
       </div>
 

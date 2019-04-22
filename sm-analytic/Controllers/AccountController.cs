@@ -31,7 +31,6 @@ namespace sm_analytic.Controllers
         private readonly IJwtManager                      _jwtManager;
         private readonly JwtIssuerProps                   _jwtProps;
         private readonly string                           _adminEmail;
-        private readonly string                           _emailLogin;
         private readonly string                           _emailPassword;
 
         public AccountController(UserManager<IdentityCustomModel> userManager, DataDbContext context, IJwtManager jwtManager, IOptions<JwtIssuerProps> jwtProps, IHttpContextAccessor httpContextAccessor)
@@ -88,8 +87,9 @@ namespace sm_analytic.Controllers
 
             // Sending email confirmation request
             var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(newUserIdentity);
+            
             var callbackUrl = Environment.GetEnvironmentVariable("baseURL") +
-                "api/Account/Confirm?userId=" + newUserIdentity.Id +
+                "auth?userConfirmed=true&userId=" + newUserIdentity.Id +
                 "&confirmationToken=" + WebUtility.UrlEncode(emailConfirmationToken);
 
             Console.WriteLine("___!!! Confirmation Token: " + emailConfirmationToken);
@@ -149,7 +149,7 @@ namespace sm_analytic.Controllers
             var result = await _userManager.ConfirmEmailAsync(userToConfirm, confirmationToken);
             if (result.Succeeded)
             {
-                return new OkObjectResult(new { message = "Email has been confirmed!" });
+                return new OkObjectResult(new { message = "Email has been confirmed! Please wait when admin approves your account." });
             }
 
             return new BadRequestObjectResult(new { message = "Unknown problem has appeared while confirming your email" });
