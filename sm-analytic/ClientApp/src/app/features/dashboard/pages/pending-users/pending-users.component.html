@@ -1,3 +1,101 @@
-<p>
-  pending-users works!
-</p>
+<div class="pending-users container">
+  <div class="text-center">
+    <h5>List of Application Users</h5>
+  </div>
+  <div class="text-center">
+    <button class="btn btn-outline-primary" (click)="getTableData()">
+      Refresh
+    </button>
+  </div>
+
+  <table class="table table-border shadow-sm table-hover text-center">
+    <thead>
+      <tr class="header">
+        <th>
+          <h6>#</h6>
+        </th>
+        <th>
+          <h6>First Name</h6>
+        </th>
+        <th>
+          <h6>Last Name</h6>
+        </th>
+        <th>
+          <h6>Email</h6>
+        </th>
+        <th>
+          <h6>Date of Birth</h6>
+        </th>
+        <th>
+          <h6>Email Confirmed by User</h6>
+        </th>
+        <th>
+          <h6>Email Confirmed by Admin</h6>
+        </th>
+        <th>
+          <h6>Last Activity Time</h6>
+        </th>
+        <th>
+          <h6>Approve Pending Account</h6>
+        </th>
+        <th>
+          <h6>Delete Account</h6>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let user of userData; let i = index">
+        <th scope="row">
+          {{i+1}}
+        </th>
+        <td>
+          {{user.firstName}}
+        </td>
+        <td>
+          {{user.lastName}}
+        </td>
+        <td>
+          {{user.email}}
+        </td>
+        <td>
+          {{user.dob | date : "MMMM dd, yyyy"}}
+        </td>
+        <td>
+          <div *ngIf="user.emailConfirmed" class="green">
+            &#10003;
+          </div>
+          <div *ngIf="!user.emailConfirmed" class="red">
+            &#10007;
+          </div>
+        </td>
+        <td>
+          <div *ngIf="user.emailConfirmedByAdmin" class="green">
+            &#10003;
+          </div>
+          <div *ngIf="!user.emailConfirmedByAdmin" class="red">
+            &#10007;
+          </div>
+        </td>
+        <td>
+          {{user.lastActivtyTime | date : "MMMM dd, yyyy  h:mm:ss a"}}
+        </td>
+        <td>
+          <button class="btn btn-outline-success" *ngIf="!accountActioned[i] && !accountConfirmedByAdmin[i]" (click)="callForConfirmation(i)">
+            Confirm
+          </button>
+          <div *ngIf="accountActioned[i]">
+            {{actionMessage}}
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-outline-danger" (click)="callForDeletion(i)">
+            Delete
+          </button>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+
+</div>

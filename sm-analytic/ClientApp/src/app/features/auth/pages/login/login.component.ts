@@ -65,7 +65,6 @@ export class LoginComponent implements OnInit, OnDestroy
         .subscribe(
         result =>
         {
-          console.log(result);
           if (result)
           {
               this.router.navigate(['dashboard']);
@@ -84,7 +83,6 @@ export class LoginComponent implements OnInit, OnDestroy
     this.userService.confirmAccount(userId, userToken)
       .subscribe(
         result => {
-          console.log("result of confirmEmail: " + result);
           this.confirmationMessage = result.message;
       });
   }

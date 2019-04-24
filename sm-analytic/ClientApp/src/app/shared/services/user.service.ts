@@ -89,7 +89,6 @@ export class UserService extends BaseService {
     let headers = new Headers({ 'Content-Type': 'application/json' });
     headers.append('Authorization', `Bearer ${auth_token}`);
 
-    console.log("Object to be sent: " + JSON.stringify({ Destination, Message }));
     return this.http.post(
       this.baseUrl + 'dashboard/sendemail',
       JSON.stringify({ Destination, Message }),
@@ -105,7 +104,6 @@ export class UserService extends BaseService {
     let headers = new Headers({ 'Content-Type': 'application/json' });
     headers.append('Authorization', `Bearer ${auth_token}`);
 
-    console.log("Object to be sent: " + JSON.stringify({ Subject, Message }));
     return this.http.post(
       this.baseUrl + 'dashboard/sendemailbroadcast',
       JSON.stringify({ Subject, Message }),
@@ -122,6 +120,48 @@ export class UserService extends BaseService {
 
     return this.http.get(
       this.baseUrl + 'account/confirm?userId=' + userId + "&confirmationToken=" + encodeURIComponent(userToken),
+      { headers }
+    )
+      .map(result => result.json())
+      .catch(this.handleError);
+  }
+
+  confirmAccountAdmin(userEmail: string) {
+    let auth_token = localStorage.getItem('auth_token');
+
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    headers.append('Authorization', `Bearer ${auth_token}`);
+
+    return this.http.get(
+      this.baseUrl + 'account/confirm/admin?userEmail=' + encodeURIComponent(userEmail),
+      { headers }
+    )
+      .map(result => result.json())
+      .catch(this.handleError);
+  }
+
+  deleteAccountAdmin(userEmail: string) {
+    let auth_token = localStorage.getItem('auth_token');
+
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    headers.append('Authorization', `Bearer ${auth_token}`);
+
+    return this.http.get(
+      this.baseUrl + 'account/delete/admin?userEmail=' + encodeURIComponent(userEmail),
+      { headers }
+    )
+      .map(result => result.json())
+      .catch(this.handleError);
+  }
+
+  getAllUsers() {
+    let auth_token = localStorage.getItem('auth_token');
+
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    headers.append('Authorization', `Bearer ${auth_token}`);
+
+    return this.http.get(
+      this.baseUrl + 'dashboard/getallusers',
       { headers }
     )
       .map(result => result.json())

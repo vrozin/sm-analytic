@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -13,11 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using sm_analytic.Models;
-using sm_analytic.Controllers;
 using System.Net.Mail;
 using System.Net;
-using System.Web;
-using System.Text.Encodings.Web;
+using System.Net.Http;
+using System.Linq;
 
 namespace sm_analytic.Controllers
 {
@@ -26,6 +22,7 @@ namespace sm_analytic.Controllers
     public class AccountController : ControllerBase
     {
         private readonly DataDbContext                    _dataDbContext;
+        private readonly ClaimsPrincipal                  _userCaller;
         private readonly Manager                          _manager;
         private readonly UserManager<IdentityCustomModel> _userManager;
         private readonly IJwtManager                      _jwtManager;
@@ -35,13 +32,14 @@ namespace sm_analytic.Controllers
 
         public AccountController(UserManager<IdentityCustomModel> userManager, DataDbContext context, IJwtManager jwtManager, IOptions<JwtIssuerProps> jwtProps, IHttpContextAccessor httpContextAccessor)
         {
+            _userCaller    = httpContextAccessor.HttpContext.User;
             _userManager   = userManager;
             _dataDbContext = context;
             _manager       = new Manager(_dataDbContext);
             _jwtManager    = jwtManager;
             _jwtProps      = jwtProps.Value;
-            _adminEmail    = "smanalyticjmv@gmail.com";//Environment.GetEnvironmentVariable("AdminEmail");
-            _emailPassword = "Qwerty112358";//Environment.GetEnvironmentVariable("EmailPassword");
+            _adminEmail    = Environment.GetEnvironmentVariable("AdminEmail");
+            _emailPassword = Environment.GetEnvironmentVariable("EmailPassword");
         }
 
         /// <summary>
@@ -108,8 +106,7 @@ namespace sm_analytic.Controllers
             };
 
             // List of recipients
-            message.To.Add(new MailAddress(newUserIdentity.Email, newUserIdentity.FirstName + " " + newUserIdentity.LastName));
-
+            message.Bcc.Add(new MailAddress(newUserIdentity.Email, newUserIdentity.FirstName + " " + newUserIdentity.LastName));
             message.Subject = "Please Confirm Your Account";
             message.Body = $"Please open the following link in your browser to confirm your new account: <a href='" +
                 callbackUrl + "'>link</a>";
@@ -137,14 +134,14 @@ namespace sm_analytic.Controllers
 
             var userToConfirm = await _dataDbContext.Users.SingleOrDefaultAsync(i => i.Id == userId);
 
-            Console.WriteLine("___!!! UserToConfirm: " + userToConfirm.Email);
-            Console.WriteLine("___!!! UserID: " + userId);
-            Console.WriteLine("___!!! UserToken: " + confirmationToken);
-
             if (userToConfirm == null)
             {
                 return new BadRequestObjectResult(new { message = "Invalid Confirmation Url" });
             }
+
+            Console.WriteLine("___!!! UserToConfirm: " + userToConfirm.Email);
+            Console.WriteLine("___!!! UserID: " + userId);
+            Console.WriteLine("___!!! UserToken: " + confirmationToken);
 
             var result = await _userManager.ConfirmEmailAsync(userToConfirm, confirmationToken);
             if (result.Succeeded)
@@ -153,6 +150,82 @@ namespace sm_analytic.Controllers
             }
 
             return new BadRequestObjectResult(new { message = "Unknown problem has appeared while confirming your email" });
+        }
+
+        /// <summary>
+        /// Confirmation of the account by admin user
+        /// </summary>
+        /// <param name="userEmail">Email of the user to be confirmed</param>
+        /// <returns>Success message if confirmed</returns>
+        [Route("~/api/Account/Confirm/Admin")]
+        [Authorize(Policy = "SMAnalytic")]
+        [HttpGet]
+        public async Task<IActionResult> EmailAdminConfirmationEndPoint(string userEmail)
+        {
+            if (userEmail == null)
+            {
+                return new BadRequestObjectResult(new { message = "Invalid Confirmation Url" });
+            }
+
+            //Getting the caller's details
+            var userId = _userCaller.Claims.Single(i => i.Type == Manager.JwtClaimHelper.ClaimIdentifierId).Value;
+            var user = await _dataDbContext.Accounts.Include(i => i.IdentityCustomModel).SingleAsync(i => i.IdentityCustomModelId == userId);
+
+            if (!user.IdentityCustomModel.IsApplicationAdmin)
+            {
+                return new BadRequestObjectResult(new { message = "Not authorized to send this type of email!" });
+            }
+
+            var userToConfirm = await _dataDbContext.Users.SingleOrDefaultAsync(i => i.Email == userEmail);
+
+            if (userToConfirm == null)
+            {
+                return new BadRequestObjectResult(new { message = "Invalid Confirmation Url" });
+            }
+
+            userToConfirm.EmailConfirmedByAdmin = true;
+            await _dataDbContext.SaveChangesAsync();
+
+            return new OkObjectResult(new { message = "Account has been confirmed by admin!" });
+        }
+
+        /// <summary>
+        /// Deletion of an account by application admin
+        /// </summary>
+        /// <param name="userEmail">Email of the account of the user to be deleted</param>
+        /// <returns></returns>
+        [Route("~/api/Account/Delete/Admin")]
+        [Authorize(Policy = "SMAnalytic")]
+        [HttpGet]
+        public async Task<IActionResult> EmailAdminDeletionEndPoint(string userEmail)
+        {
+            if (userEmail == null)
+            {
+                return new BadRequestObjectResult(new { message = "Invalid Confirmation Url" });
+            }
+
+            //Getting the caller's details
+            var userId = _userCaller.Claims.Single(i => i.Type == Manager.JwtClaimHelper.ClaimIdentifierId).Value;
+            var user = await _dataDbContext.Accounts.Include(i => i.IdentityCustomModel).SingleAsync(i => i.IdentityCustomModelId == userId);
+
+            if (!user.IdentityCustomModel.IsApplicationAdmin)
+            {
+                return new BadRequestObjectResult(new { message = "Not authorized to send this type of email!" });
+            }
+
+            var userToDelete = await _dataDbContext.Users.SingleOrDefaultAsync(i => i.Email == userEmail);
+
+            if (userToDelete == null)
+            {
+                return new BadRequestObjectResult(new { message = "Invalid Confirmation Url" });
+            }
+
+            var userToDeleteAccountFK = await _dataDbContext.Accounts.SingleOrDefaultAsync(i => i.IdentityCustomModelId == userToDelete.Id);
+            _dataDbContext.Remove(userToDeleteAccountFK);
+            await _userManager.DeleteAsync(userToDelete);
+            await _dataDbContext.SaveChangesAsync();
+
+            return new OkObjectResult(new { message = "Account has been deleted by admin!" });
         }
 
         /// <summary>

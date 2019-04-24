@@ -118,5 +118,17 @@ namespace sm_analytic.Models
         [DisplayName("Is Admin")]
         [Required]
         public bool IsAdmin { get; set; }
+
+        [DisplayName("Email Confirmed")]
+        [Required]
+        public bool EmailConfirmed { get; set; }
+
+        [DisplayName("Email Confirmed By Admin")]
+        [Required]
+        public bool EmailConfirmedByAdmin { get; set; }
+
+        [DisplayName("Time Of Last Activity")]
+        [Required]
+        public DateTime LastActivtyTime { get; set; }
     }
 }

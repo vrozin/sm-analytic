@@ -33,8 +33,8 @@ namespace sm_analytic.Controllers
             _dataDbContext = dataDbContext;
             _userManager   = userManager;
 
-            _adminEmail    = "smanalyticjmv@gmail.com";//Environment.GetEnvironmentVariable("AdminEmail");
-            _emailPassword = "Qwerty112358";//Environment.GetEnvironmentVariable("EmailPassword");
+            _adminEmail    = Environment.GetEnvironmentVariable("AdminEmail");
+            _emailPassword = Environment.GetEnvironmentVariable("EmailPassword");
         }
 
         /// <summary>
@@ -56,11 +56,14 @@ namespace sm_analytic.Controllers
 
             var toReturn = new AccountBaseInfo
             {
-                FirstName = user.IdentityCustomModel.FirstName,
-                LastName  = user.IdentityCustomModel.LastName,
-                Email     = user.IdentityCustomModel.Email,
-                DOB       = user.IdentityCustomModel.DOB,
-                IsAdmin   = user.IdentityCustomModel.IsApplicationAdmin
+                FirstName             = user.IdentityCustomModel.FirstName,
+                LastName              = user.IdentityCustomModel.LastName,
+                Email                 = user.IdentityCustomModel.Email,
+                DOB                   = user.IdentityCustomModel.DOB,
+                IsAdmin               = user.IdentityCustomModel.IsApplicationAdmin,
+                EmailConfirmed        = user.IdentityCustomModel.EmailConfirmed,
+                EmailConfirmedByAdmin = user.IdentityCustomModel.EmailConfirmedByAdmin,
+                LastActivtyTime       = user.IdentityCustomModel.LastLoginDate
             };
 
             return new OkObjectResult(toReturn);
@@ -137,29 +140,68 @@ namespace sm_analytic.Controllers
             smtp.Port = 587;
             smtp.Credentials = new NetworkCredential(_adminEmail, _emailPassword);
 
-            MailMessage message = new MailMessage();
-            message.Sender = new MailAddress(_adminEmail, "Admin");
-            message.From = new MailAddress(_adminEmail, "SM Analytic Notifications");
-            message.Subject = emailMessage.Subject;
-            message.Body = "<b>FROM:</b> " + user.FirstName + " " + user.LastName + " (" + user.Email + ")" +
-               "<p> <b>MESSAGE:</b> " +
-               emailMessage.Message +
-               "</p> ";
-            message.IsBodyHtml = true;
+            MailMessage message = new MailMessage
+            {
+                Sender = new MailAddress(_adminEmail, "Admin"),
+                From = new MailAddress(_adminEmail, "SM Analytic Notifications"),
+                Subject = emailMessage.Subject,
+                Body = "<b>FROM:</b> " + user.FirstName + " " + user.LastName + " (" + user.Email + ")" +
+                    "<p> <b>MESSAGE:</b> " +
+                    emailMessage.Message +
+                    "</p> ",
+                IsBodyHtml = true
+            };
 
             await _dataDbContext
                 .Users
-                .Where(i => i.IsApplicationAdmin == false && i.EmailConfirmedByAdmin == true)
+                .Where(i => i.IsApplicationAdmin == false && i.EmailConfirmedByAdmin == true && i.EmailConfirmedByAdmin == true)
                 .ForEachAsync(i =>
                 {
-                    message.To.Add(new MailAddress(i.Email, i.FirstName + " " + i.LastName));
+                    message.Bcc.Add(new MailAddress(i.Email, i.FirstName + " " + i.LastName));
                 });
 
             await smtp.SendMailAsync(message);
 
             return new OkObjectResult(new { result = "The email has been sent" });
+        }
 
+        /// <summary>
+        /// Admin can get 
+        /// </summary>
+        /// <returns></returns>
+        [Route("~/api/Dashboard/GetAllUsers")]
+        [Authorize(Policy = "SMAnalytic")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            // Getting the caller's details
+            var userActionResult = await GetCallerDetails();
+            var userObjectResult = userActionResult as OkObjectResult;
+            var user = userObjectResult.Value as AccountBaseInfo;
 
+            if (!user.IsAdmin)
+            {
+                return new BadRequestObjectResult(new { message = "Not authorized to send this type of email!" });
+            }
+
+            List<AccountBaseInfo> data = new List<AccountBaseInfo>();
+
+            await _dataDbContext.Users.Where(i => i.IsApplicationAdmin == false).ForEachAsync(i =>
+            {
+                data.Add( new AccountBaseInfo { FirstName = i.FirstName,
+                                                LastName = i.LastName,
+                                                Email = i.Email,
+                                                DOB = i.DOB,
+                                                IsAdmin = i.IsApplicationAdmin,
+                                                EmailConfirmed = i.EmailConfirmed,
+                                                EmailConfirmedByAdmin = i.EmailConfirmedByAdmin,
+                                                LastActivtyTime = i.LastLoginDate});
+
+            });
+
+            Console.WriteLine("____!!! The dataset we got: "+data.ToList());
+
+            return new OkObjectResult(data);
         }
     }
 }

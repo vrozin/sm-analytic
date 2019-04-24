@@ -38,7 +38,7 @@ namespace sm_analytic
         {
             //Dependency Injection to 
             services.AddDbContext<DataDbContext>(options => options.UseSqlServer(
-                                                            Configuration.GetConnectionString(/*"AzureConnection"*/"DefaultConnection")));
+                                                            Configuration.GetConnectionString("AzureConnection"/*"DefaultConnection"*/)));
             services.BuildServiceProvider().GetService<DataDbContext>().Database.Migrate();
             
             services.AddSingleton<IJwtManager, JwtManager>();

@@ -2,8 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from "@angular/router";
 import { DashboardUser } from '../../../../shared/models/dashboard-user';
 import { DashboardService } from '../../dashboard.service';
-import { UserInfoComponent } from '../user-info/user-info.component';
-import { UserService } from '../../../../shared/services/user.service';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({

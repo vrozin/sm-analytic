@@ -38,7 +38,6 @@ export class BroadcastMessageComponent implements OnInit {
     }
     else
       if (valid) {
-        console.log("Sending broadcast! Sub: " + value.Subject.trim() + "  Msg: " + value.Message.trim());
         this.userService.sendBroadcastEmail(value.Subject.trim(), value.Message.trim())
           .subscribe(result => {
             if (result.result != 0) {

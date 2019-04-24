@@ -5,4 +5,7 @@ export interface DashboardUser
   email: string;
   dob: string;
   isAdmin: boolean;
+  emailConfirmed: boolean;
+  emailConfirmedByAdmin: boolean;
+  lastActivtyTime: string;
 }
