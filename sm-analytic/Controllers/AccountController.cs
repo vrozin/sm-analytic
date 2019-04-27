@@ -92,7 +92,7 @@ namespace sm_analytic.Controllers
 
             Console.WriteLine("___!!! Confirmation Token: " + emailConfirmationToken);
 
-            SmtpClient smtp = new SmtpClient("smtp.gmail.com")
+            SmtpClient smtp = new SmtpClient("smtp.office365.com")
             {
                 EnableSsl = true,
                 Port = 587,

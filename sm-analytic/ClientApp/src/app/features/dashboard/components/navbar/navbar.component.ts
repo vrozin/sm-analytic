@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { DashboardUser } from '../../../../shared/models/dashboard-user';
 import { DashboardService } from '../../dashboard.service';
 import { Subscription } from 'rxjs/Subscription';
+import { UserService } from '../../../../shared/services/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -22,7 +23,8 @@ export class NavbarComponent implements OnInit {
   private dashboardUserSubscr: Subscription = null;
   
   constructor(private router: Router,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private userService: UserService
   ) { }
 
   ngOnInit()
@@ -45,6 +47,8 @@ export class NavbarComponent implements OnInit {
         this.options.push(new Object({ 'title': 'Admin Panel', 'path': 'dashboard/pending-users' }));
         this.options.push(new Object({ 'title': 'Broadcast', 'path': 'dashboard/broadcast-message' }));
       }
+
+      this.options.push(new Object({ 'title': 'Logout', 'path': 'landing' }));
     },
       error => { });
   }
@@ -59,6 +63,11 @@ export class NavbarComponent implements OnInit {
   }
 
   gotoMenuPage(path) {
+    if (path == 'landing') {
+      this.userService.logout();
+      localStorage.clear();
+    }
+
     this.router.navigate([path]);
   }
 }

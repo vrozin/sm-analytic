@@ -86,7 +86,7 @@ namespace sm_analytic.Controllers
             var user = userObjectResult.Value as AccountBaseInfo;
 
             // Sending the email
-            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
+            SmtpClient smtp = new SmtpClient("smtp.office365.com");
 
             smtp.EnableSsl = true;
             smtp.Port = 587;
@@ -134,7 +134,7 @@ namespace sm_analytic.Controllers
             }
 
             // Sending the email
-            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
+            SmtpClient smtp = new SmtpClient("smtp.office365.com");
 
             smtp.EnableSsl = true;
             smtp.Port = 587;
@@ -186,7 +186,7 @@ namespace sm_analytic.Controllers
 
             List<AccountBaseInfo> data = new List<AccountBaseInfo>();
 
-            await _dataDbContext.Users.Where(i => i.IsApplicationAdmin == false).ForEachAsync(i =>
+            await _dataDbContext.Users.Where(i => i.Email != user.Email).ForEachAsync(i =>
             {
                 data.Add( new AccountBaseInfo { FirstName = i.FirstName,
                                                 LastName = i.LastName,
