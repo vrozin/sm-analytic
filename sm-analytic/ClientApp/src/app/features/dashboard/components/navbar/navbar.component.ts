@@ -4,6 +4,7 @@ import { DashboardUser } from '../../../../shared/models/dashboard-user';
 import { DashboardService } from '../../dashboard.service';
 import { Subscription } from 'rxjs/Subscription';
 import { UserService } from '../../../../shared/services/user.service';
+import { TwitterDataService } from '../../../../shared/services/twitter-data.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,7 +25,8 @@ export class NavbarComponent implements OnInit {
   
   constructor(private router: Router,
     private dashboardService: DashboardService,
-    private userService: UserService
+    private userService: UserService,
+    private twitterService: TwitterDataService
   ) { }
 
   ngOnInit()
@@ -64,6 +66,7 @@ export class NavbarComponent implements OnInit {
 
   gotoMenuPage(path) {
     if (path == 'landing') {
+      this.twitterService.clearSession();
       this.userService.logout();
       localStorage.clear();
     }
