@@ -96,17 +96,17 @@ namespace sm_analytic.Controllers
             {
                 EnableSsl = true,
                 Port = 587,
-                Credentials = new NetworkCredential(_adminEmail, _emailPassword)
+                Credentials = new NetworkCredential(/*_adminEmail*/"vrozin@myseneca.ca", /*_emailPassword*/"Ilyew13243546!")
             };
 
             MailMessage message = new MailMessage
             {
-                Sender = new MailAddress(_adminEmail, "Admin"),
-                From = new MailAddress(_adminEmail, "SM Analytic")
+                Sender = new MailAddress(/*_adminEmail*/"vrozin@myseneca.ca", "Admin"),
+                From = new MailAddress(/*_adminEmail*/"vrozin@myseneca.ca", "SM Analytic")
             };
 
             // List of recipients
-            message.Bcc.Add(new MailAddress(newUserIdentity.Email, newUserIdentity.FirstName + " " + newUserIdentity.LastName));
+            message.To.Add(new MailAddress(newUserIdentity.Email, newUserIdentity.FirstName + " " + newUserIdentity.LastName));
             message.Subject = "Please Confirm Your Account";
             message.Body = $"Please open the following link in your browser to confirm your new account: <a href='" +
                 callbackUrl + "'>link</a>";
