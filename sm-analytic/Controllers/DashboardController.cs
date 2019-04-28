@@ -157,7 +157,7 @@ namespace sm_analytic.Controllers
                 .Where(i => i.IsApplicationAdmin == false && i.EmailConfirmedByAdmin == true && i.EmailConfirmedByAdmin == true)
                 .ForEachAsync(i =>
                 {
-                    message.Bcc.Add(new MailAddress(i.Email, i.FirstName + " " + i.LastName));
+                    message.To.Add(new MailAddress(i.Email, i.FirstName + " " + i.LastName));
                 });
 
             await smtp.SendMailAsync(message);
