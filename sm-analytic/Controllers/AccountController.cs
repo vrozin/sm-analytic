@@ -96,7 +96,7 @@ namespace sm_analytic.Controllers
             {
                 EnableSsl = true,
                 Port = 587,
-                Credentials = new NetworkCredential(_adminEmail, _emailPassword)
+                Credentials = new NetworkCredential(_adminEmail, _emailPassword), 
             };
 
             MailMessage message = new MailMessage

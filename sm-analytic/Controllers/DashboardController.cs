@@ -86,26 +86,26 @@ namespace sm_analytic.Controllers
             var user = userObjectResult.Value as AccountBaseInfo;
 
             // Sending the email
-            SmtpClient smtp = new SmtpClient("smtp.office365.com");
+            SmtpClient smtp = new SmtpClient("smtp.office365.com")
+            {
+                EnableSsl = true,
+                Port = 587,
+                Credentials = new NetworkCredential(_adminEmail, _emailPassword)
+            };
 
-            smtp.EnableSsl = true;
-            smtp.Port = 587;
-            smtp.Credentials = new NetworkCredential(_adminEmail, _emailPassword);
-
-            MailMessage message = new MailMessage();
-
-            message.Sender = new MailAddress(_adminEmail, user.Email);
-            message.From = new MailAddress(_adminEmail, "SM Analytic Help");
+            MailMessage message = new MailMessage
+            {
+                Sender = new MailAddress(_adminEmail, user.Email),
+                From = new MailAddress(_adminEmail, "SM Analytic Help")
+            };
 
             // List of recipients
             message.To.Add(new MailAddress(emailMessage.Destination, "Admin"));
-
             message.Subject = "Help Request";
             message.Body = "<b>FROM:</b> " + user.FirstName + " " + user.LastName + " (" + user.Email + ")" +
                "<p> <b>MESSAGE:</b> " +
                emailMessage.Message +
                "</p> ";
-
             message.IsBodyHtml = true;
 
             await smtp.SendMailAsync(message);
@@ -136,13 +136,13 @@ namespace sm_analytic.Controllers
             // Sending the email
             SmtpClient smtp = new SmtpClient("smtp.office365.com");
 
-            smtp.EnableSsl = true;
+            //smtp.EnableSsl = true;
             smtp.Port = 587;
             smtp.Credentials = new NetworkCredential(_adminEmail, _emailPassword);
-
+            
             MailMessage message = new MailMessage
             {
-                Sender = new MailAddress(_adminEmail, "Admin"),
+                Sender = new MailAddress(/*_adminEmail*/"vrozin@myseneca.ca", "Admin"),
                 From = new MailAddress(_adminEmail, "SM Analytic Notifications"),
                 Subject = emailMessage.Subject,
                 Body = "<b>FROM:</b> " + user.FirstName + " " + user.LastName + " (" + user.Email + ")" +

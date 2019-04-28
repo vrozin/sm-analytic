@@ -89,6 +89,7 @@ export class UserService extends BaseService {
     let headers = new Headers({ 'Content-Type': 'application/json' });
     headers.append('Authorization', `Bearer ${auth_token}`);
 
+    console.log("Sending help request to: " + Destination);
     return this.http.post(
       this.baseUrl + 'dashboard/sendemail',
       JSON.stringify({ Destination, Message }),
